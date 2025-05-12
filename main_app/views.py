@@ -70,9 +70,8 @@ class ServiceList(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        if self.request.user.role != "provider":
-            raise PermissionDenied("Only providers can view services.")
-        return Service.objects.filter(provider=self.request.user)
+        # Allow all authenticated users to view services
+        return Service.objects.all()
 
     def perform_create(self, serializer):
         if self.request.user.role != "provider":

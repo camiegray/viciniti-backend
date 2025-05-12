@@ -20,7 +20,5 @@ urlpatterns = [
     path("services/<int:id>/", ServiceDetail.as_view(), name="service-detail"),
     path("discount-rules/", DiscountRuleListCreate.as_view(), name="discount-rule"),
     path("appointments/", AppointmentListCreate.as_view(), name="appointment-list"),
-    path(
-        "appointments/<int:id>/", AppointmentDetail.as_view(), name="appointment-detail"
-    ),
+    path("appointments/<int:id>/", AppointmentDetail.as_view(), name="appointment-detail"),
 ]
