@@ -44,10 +44,13 @@ class LoginView(APIView):
         user = authenticate(username=username, password=password)
         if user:
             refresh = RefreshToken.for_user(user)
+            user_data = UserSerializer(user).data
+            # Ensure role is included in the response
+            user_data['role'] = user.role
             return Response({
                 "refresh": str(refresh),
                 "access": str(refresh.access_token),
-                "user": UserSerializer(user).data
+                "user": user_data
             })
         return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
