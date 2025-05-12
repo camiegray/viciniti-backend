@@ -28,10 +28,19 @@ class ServiceSerializer(serializers.ModelSerializer):
 class AppointmentSerializer(serializers.ModelSerializer):
     customer = serializers.PrimaryKeyRelatedField(read_only=True)
     service_title = serializers.ReadOnlyField(source='service.title')
+    service_details = serializers.SerializerMethodField()
 
     class Meta:
         model = Appointment
-        fields = ['id', 'customer', 'service', 'service_title', 'datetime', 'location', 'discounted_price']
+        fields = ['id', 'customer', 'service', 'service_title', 'service_details', 'datetime', 'location', 'discounted_price']
+
+    def get_service_details(self, obj):
+        return {
+            'title': obj.service.title,
+            'description': obj.service.description,
+            'base_price': obj.service.base_price,
+            'duration_minutes': obj.service.duration_minutes
+        }
 
 
 class DiscountRuleSerializer(serializers.ModelSerializer):

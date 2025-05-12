@@ -111,12 +111,24 @@ class AppointmentListCreate(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        if self.request.user.role == "customer":
-            return Appointment.objects.filter(customer=self.request.user)
-        elif self.request.user.role == "provider":
-            return Appointment.objects.filter(service__provider=self.request.user)
-        else:
+        try:
+            if self.request.user.role == "customer":
+                return Appointment.objects.filter(customer=self.request.user).order_by('datetime')
+            elif self.request.user.role == "provider":
+                return Appointment.objects.filter(service__provider=self.request.user).order_by('datetime')
+            else:
+                return Appointment.objects.none()
+        except Exception as e:
+            print(f"Error fetching appointments: {str(e)}")
             return Appointment.objects.none()
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({
+            'appointments': serializer.data,
+            'count': queryset.count()
+        })
 
     def perform_create(self, serializer):
         if self.request.user.role != "customer":
